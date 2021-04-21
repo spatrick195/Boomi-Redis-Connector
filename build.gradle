@@ -1,0 +1,63 @@
+plugins {
+    id 'java-library'
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+group 'nz.co.fmg'
+version '1.0'
+
+repositories {
+    jcenter()
+    mavenCentral()
+
+    maven {
+        name = "Connector SDK Repository"
+        url 'https://boomisdk.s3.amazonaws.com/releases'
+    }
+}
+
+configurations {
+    lib {
+        extendsFrom api
+        extendsFrom implementation
+    }
+}
+
+dependencies {
+    // Boomi API
+    implementation "com.boomi.connsdk:connector-sdk-api:2.8.2"
+    api("com.boomi.connsdk:connector-sdk-util:2.8.2") {
+        transitive false
+    }
+    // Boomi Utils
+    implementation "com.boomi.util:boomi-util:2.3.8"
+    // IDE tool
+    implementation 'org.jetbrains:annotations:20.1.0'
+    // Boomi Tests
+    testImplementation "com.boomi.connsdk:connector-sdk-test-util:2.8.2"
+    // JUnit Tests
+    testImplementation "junit:junit:4.12"
+    // Redis
+    implementation "redis.clients:jedis:3.4.0"
+    // JSON
+    implementation "org.json:json:20200518"
+}
+
+task connectorArchive(type: Zip) {
+    into "lib", {
+        from jar
+        from configurations.lib
+    }
+    into "META-INF", {
+        from sourceSets.main.resources, {
+            include "connector-descriptor.xml"
+            include "connector-config.xml"
+        }
+    }
+}
+
+assemble.dependsOn connectorArchive

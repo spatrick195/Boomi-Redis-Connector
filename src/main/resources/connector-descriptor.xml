@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenericConnectorDescriptor requireConnectionForBrowse="true">
+    <description>Redis Connector based on Jedis</description>
+    <field id="redisHostURL" label="Host URL" type="string">
+        <helpText>Specifies the URL that the Redis instance is hosted on</helpText>
+        <defaultValue>127.0.0.1</defaultValue>
+    </field>
+    <field id="redisHostPort" label="Port" type="string">
+        <helpText>Specifies the port of the Redis host</helpText>
+        <defaultValue>6379</defaultValue>
+    </field>
+    <field id="redisHostPassword" label="Password" type="password">
+        <helpText>Specifies the password for the Redis Host</helpText>
+    </field>
+    <field id="redisConnectionTimeout" label="Connection Timeout" type="string">
+        <helpText>Specifies the host connection timeout in milliseconds</helpText>
+        <defaultValue>2000</defaultValue>
+    </field>
+    <field id="redisCluster" label="Cluster Enabled" type="string">
+        <helpText>Specifies if the Redis connection is using a cluster</helpText>
+        <defaultValue>false</defaultValue>
+    </field>
+    <field id="redisEnableExpiry" label="Expiry Enabled (Deprecated)" type="string">
+        <helpText>This property has been deprecated and is only meant for backwards compatibility. Please use
+        the Redis document property instead</helpText>
+        <defaultValue>false</defaultValue>
+    </field>
+    <field id="redisExpiryTime" label="Redis Expiry Time (Deprecated)" type="string">
+        <helpText>This property has been deprecated and is only meant for backwards compatibility. Please use
+            the Redis document property instead</helpText>
+        <defaultValue>0</defaultValue>
+    </field>
+    <operation types="GET">
+        <field id="getAll" label="Retrieve all items in hash set" type="boolean">
+            <helpText>Specifies if the get operation retrieves all fields within a hashset. The key you are querying
+                must have more than one field (inner-key) for this option to work.</helpText>
+            <defaultValue>false</defaultValue>
+        </field>
+    </operation>
+    <operation types="EXECUTE" customTypeId="QUERY" customTypeLabel="INVALIDATE"/>
+    <operation types="CREATE"/>
+    <operation types="DELETE">
+        <field id="deleteByPattern" label="Delete by Pattern" type="boolean">
+            <helpText>
+                Available patterns:
+                ? Occurs zero or once e.g. h?llo finds nothing or exactly one letter after h.
+                * Occurs zero or multiple e.g. X* finds none or several letter and .* finds any character sequence
+                [...] Matches any character inside of the brackets e.g. H[xyz]llo will find hxllo, hyllo e.t.c.
+                Use \ to escape special chars if you want to match them verbatim.
+            </helpText>
+            <defaultValue>false</defaultValue>
+        </field>
+    </operation>
+    <dynamicProperty type="string" id="cacheAtom" label="Atom"/>
+    <dynamicProperty type="string" id="cacheKey" label="Key"/>
+    <dynamicProperty type="string" id="cacheInnerKey" label="Field"/>
+    <dynamicProperty type="integer" id="cacheExpiry" label="Expiry Time"/>
+    <dynamicProperty type="string" id="cacheValue" label="Value"/>
+    <dynamicProperty type="boolean" id="cachePrefix" label="Use Prefix"/>
+    <dynamicProperty type="string" id="cacheJSONArrayOutput" label="Convert HGet to JSON Array"/>
+</GenericConnectorDescriptor>
