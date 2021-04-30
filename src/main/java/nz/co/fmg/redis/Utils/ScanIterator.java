@@ -7,6 +7,8 @@ import redis.clients.jedis.ScanResult;
 import java.util.Iterator;
 import java.util.List;
 
+import static redis.clients.jedis.ScanParams.SCAN_POINTER_START;
+
 public class ScanIterator implements Iterator<List<String>> {
     private final Jedis _jedis;
     private final ScanParams _scanParams;
@@ -27,11 +29,7 @@ public class ScanIterator implements Iterator<List<String>> {
 
     @Override
     public List<String> next() {
-        if (_scanResult == null) {
-            _scanResult = _jedis.scan("0", _scanParams);
-        }
-        _scanResult = _jedis.scan(_scanResult.getCursor(), _scanParams);
-
+        _scanResult = _jedis.scan(SCAN_POINTER_START, _scanParams);
         return _scanResult.getResult();
     }
 }

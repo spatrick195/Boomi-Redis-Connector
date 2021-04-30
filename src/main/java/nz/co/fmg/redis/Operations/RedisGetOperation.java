@@ -3,7 +3,6 @@ package nz.co.fmg.redis.Operations;
 import com.boomi.connector.api.*;
 import com.boomi.connector.util.BaseGetOperation;
 import nz.co.fmg.redis.Repository.RedisCommands;
-import nz.co.fmg.redis.Logging.ContainerLogger;
 import nz.co.fmg.redis.RedisConnection;
 import nz.co.fmg.redis.Utils.BoomiUtils;
 import nz.co.fmg.redis.Utils.StringUtils;
@@ -23,7 +22,7 @@ public class RedisGetOperation extends BaseGetOperation {
 
     @Override
     protected void executeGet(GetRequest request, OperationResponse response) {
-        Logger logger = ContainerLogger.getResponseLogger(response);
+        Logger logger = response.getLogger();
         ObjectIdData objectId = request.getObjectId();
 
         String cacheKey = BoomiUtils.GetPrefixedKey(objectId, "cacheKey");

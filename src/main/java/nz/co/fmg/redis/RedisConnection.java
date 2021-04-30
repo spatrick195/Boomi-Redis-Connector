@@ -30,7 +30,7 @@ public class RedisConnection extends BaseConnection<BrowseContext> {
 
     public RedisCommands getRedisInstance() {
         if (redis == null) {
-            redis = new RedisCommands(_host, _port, _password, _timeOut, _isCluster, _expiryEnabled);
+            redis = new RedisCommands(_host, _port, _password, _timeOut, _isCluster, _expiryEnabled, _expiryTime);
         }
         return redis;
     }

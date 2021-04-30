@@ -102,4 +102,8 @@ public interface IRepository {
      * @return Returns 1 if the timeout was successful, 0  if the key does not exist
      */
     Long expire(String key, Integer seconds);
+
+    Boolean isExpiry();
+
+    Long getExpiry();
 }
