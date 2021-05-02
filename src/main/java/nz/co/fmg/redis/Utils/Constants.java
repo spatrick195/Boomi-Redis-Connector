@@ -1,6 +1,6 @@
 package nz.co.fmg.redis.Utils;
 
-public class StringConstants {
+public class Constants {
     public static final String HASH_RESPONSE_SUCCESS = "1";
     public static final String RESPONSE_SUCCESS = "OK";
     public static final String RESPONSE_FAIL_NO_KEY = "NO_KEY";

@@ -64,12 +64,14 @@ public interface IRepository {
 
     /**
      * Matches all keys which follow a regex-like pattern
+     *
      * @param pattern The regex pattern to be matched
      * @return Returns the number of keys deleted
      */
     Long pattern(String pattern);
 
     Long hashPattern(String pattern);
+
     /**
      * Removes the specified keys. A key is ignored if it does not exist.
      *
@@ -90,6 +92,7 @@ public interface IRepository {
 
     /**
      * Expires the specified key
+     *
      * @param key The key to be expired
      * @return Returns 1 if the timeout was successful, 0  if the key does not exist
      */
@@ -97,7 +100,8 @@ public interface IRepository {
 
     /**
      * Expires the specified key
-     * @param key The key to be expired
+     *
+     * @param key     The key to be expired
      * @param seconds The time to live
      * @return Returns 1 if the timeout was successful, 0  if the key does not exist
      */

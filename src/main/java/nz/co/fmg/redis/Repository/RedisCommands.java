@@ -10,14 +10,12 @@ import java.util.Map;
 
 
 public class RedisCommands extends RedisRepository {
-
     private final Long _expiryTimeout;
     private final Boolean _expiryEnabled;
 
-    public RedisCommands(final String host, final Long port, final String password, final Long timeout,
-                         final Boolean clusterEnabled,
-                         final Boolean expiryEnabled, final Long expiryTime) {
-        InitializeConnection(host, port, password, timeout, clusterEnabled);
+    public RedisCommands(String host, Long port, String password, Long timeout,
+                         Boolean clusterEnabled, Boolean expiryEnabled, Long expiryTime) {
+        super.InitializeConnection(host, port, password, timeout, clusterEnabled);
         _expiryTimeout = expiryTime;
         _expiryEnabled = expiryEnabled;
     }
@@ -34,62 +32,52 @@ public class RedisCommands extends RedisRepository {
 
     @Override
     public String get(String key) {
-        String result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.get(key);
+            return jedis.get(key);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
     public String get(String key, String field) {
-        String result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.hget(key, field);
+            return jedis.hget(key, field);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
     public String set(String key, String value) {
-        String result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.set(key, value);
+            return jedis.set(key, value);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
     public Long set(String key, String field, String value) {
-        Long result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.hset(key, field, value);
+            return jedis.hset(key, field, value);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
     public String set(String key, int expiry, String value) {
-        String result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.setex(key, expiry, value);
+            return jedis.setex(key, expiry, value);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
@@ -101,8 +89,9 @@ public class RedisCommands extends RedisRepository {
         try {
             while (iterator.hasNext()) {
                 List<String> keys = iterator.next();
+                result = (long) keys.size();
                 for (String key : keys) {
-                    result = jedis.del(key);
+                    jedis.del(key);
                 }
             }
         } finally {
@@ -113,50 +102,42 @@ public class RedisCommands extends RedisRepository {
 
     @Override
     public Long delete(String key) {
-        long result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.del(key);
+            return jedis.del(key);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
     public Long delete(String key, String field) {
-        long result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.hdel(key, field);
+            return jedis.hdel(key, field);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
     public Long expire(String key) {
-        long result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.expire(key, 0);
+            return jedis.expire(key, 0);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override
     public Long expire(String key, Integer seconds) {
-        long result;
         Jedis jedis = getJedis();
         try {
-            result = jedis.expire(key, seconds);
+            return jedis.expire(key, seconds);
         } finally {
             releaseJedis(jedis);
         }
-        return result;
     }
 
     @Override

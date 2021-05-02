@@ -4,6 +4,7 @@ import com.boomi.connector.api.BrowseContext;
 import com.boomi.connector.api.PropertyMap;
 import com.boomi.connector.util.BaseConnection;
 import nz.co.fmg.redis.Repository.RedisCommands;
+import nz.co.fmg.redis.Repository.RedisRepository;
 
 public class RedisConnection extends BaseConnection<BrowseContext> {
 
@@ -14,7 +15,7 @@ public class RedisConnection extends BaseConnection<BrowseContext> {
     private final Boolean _isCluster;
     private final Boolean _expiryEnabled;
     private final Long _expiryTime;
-    private RedisCommands redis;
+    private RedisRepository redis;
 
     public RedisConnection(BrowseContext context) {
         super(context);
@@ -28,7 +29,7 @@ public class RedisConnection extends BaseConnection<BrowseContext> {
         _expiryTime = Long.parseLong(propertyMap.getProperty("redisExpiryTime"));
     }
 
-    public RedisCommands getRedisInstance() {
+    public RedisRepository getRedisInstance() {
         if (redis == null) {
             redis = new RedisCommands(_host, _port, _password, _timeOut, _isCluster, _expiryEnabled, _expiryTime);
         }

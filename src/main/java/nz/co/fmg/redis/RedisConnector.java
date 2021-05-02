@@ -5,9 +5,7 @@ import com.boomi.connector.api.Browser;
 import com.boomi.connector.api.Operation;
 import com.boomi.connector.api.OperationContext;
 import com.boomi.connector.util.BaseConnector;
-import nz.co.fmg.redis.Operations.RedisCreateOperation;
-import nz.co.fmg.redis.Operations.RedisDeleteOperation;
-import nz.co.fmg.redis.Operations.RedisGetOperation;
+import nz.co.fmg.redis.Operations.*;
 
 public class RedisConnector extends BaseConnector {
 

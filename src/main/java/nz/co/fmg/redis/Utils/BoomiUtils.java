@@ -25,7 +25,7 @@ public class BoomiUtils {
      */
     public static boolean GetOperationBoolProperty(OperationContext data, String propertyName) {
         PropertyMap propertyMap = data.getOperationProperties();
-        return propertyMap.getBooleanProperty(propertyName);
+        return Boolean.parseBoolean((propertyMap.getProperty(propertyName)));
     }
 
     /**
@@ -38,10 +38,11 @@ public class BoomiUtils {
         String cacheAtom = GetDynamicProperty(data, "cacheAtom");
         String cachePrefix = GetDynamicProperty(data, "cachePrefix");
         String prefixedKey = String.join(":", cacheAtom, cacheKey);
+
         boolean isPrefix = StringUtils.isNotEmpty(cachePrefix) && "true".equals(cachePrefix) ? Boolean.TRUE :
                 Boolean.FALSE;
-        boolean isProductionEnv = Objects.equals(cacheAtom, StringConstants.PROD_ATOM) || Objects.equals(cacheAtom,
-                StringConstants.PRE_PROD_ATOM);
+        boolean isProductionEnv = Objects.equals(cacheAtom, Constants.PROD_ATOM) || Objects.equals(cacheAtom,
+                Constants.PRE_PROD_ATOM);
 
         if (!isPrefix) {
             return cacheKey;
