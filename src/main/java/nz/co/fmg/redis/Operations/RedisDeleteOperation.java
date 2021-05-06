@@ -31,27 +31,28 @@ public class RedisDeleteOperation extends BaseDeleteOperation {
 
                 if (StringUtils.isEmpty(cacheKey)) {
                     response.getLogger().severe("REDIS: Delete operation failed because the cache key was empty.");
-                    response.addResult(objectIdData, OperationStatus.APPLICATION_ERROR, RESPONSE_FAIL_NO_KEY, "The key is a required document property", null);
+                    response.addErrorResult(objectIdData, OperationStatus.APPLICATION_ERROR, HTTP_400, BAD_REQUEST, new Exception("The key is a required document property"));
                 }
 
                 if (deleteByPattern) {
-                    deletedValue = isHash ? redis.pattern(cacheKey) : redis.pattern(cacheKey);
+                    deletedValue = isHash ? redis.keys(cacheKey) : redis.pattern(cacheKey);
                 } else {
                     deletedValue = isHash ? redis.delete(cacheKey, cacheInnerKey) : redis.delete(cacheKey);
                 }
-//                isSuccessful = deletedValue == Long.parseLong(HASH_RESPONSE_SUCCESS);
 
-                response.getLogger().fine(String.format("REDIS: Attempting to delete '%s' key(s)", deletedValue));
-                if (deletedValue > 0) {
-                    response.addResult(objectIdData, OperationStatus.SUCCESS, RESPONSE_SUCCESS, RESPONSE_SUCCESS, PayloadUtil.toPayload(RESPONSE_SUCCESS));
-                } else if (deletedValue == 0) {
-                    response.addResult(objectIdData, OperationStatus.APPLICATION_ERROR, RESPONSE_FAIL_NO_KEY, "No keys deleted", PayloadUtil.toPayload(String.format("Deleted %s key(s)", deletedValue)));
+                isSuccessful = deletedValue > HASH_RESPONSE_FAILURE;
+                response.getLogger().info(String.format("REDIS: Deleted '%s' key(s)", deletedValue));
+
+                if (isSuccessful) {
+                    response.addResult(objectIdData, OperationStatus.SUCCESS, OK, OK, PayloadUtil.toPayload(HASH_RESPONSE_SUCCESS));
                 } else {
-                    ResponseUtil.addEmptyFailure(response, objectIdData, RESPONSE_FAIL_ERROR);
+                    response.addEmptyResult(objectIdData, OperationStatus.APPLICATION_ERROR, NOT_FOUND, "No keys deleted");
                 }
+
             } catch (Exception e) {
-                response.addErrorResult(objectIdData, OperationStatus.FAILURE, RESPONSE_FAIL_ERROR,
-                        e.getMessage(), e);
+                response.getLogger().severe(String.format("REDIS: An unexpected error has occurred:\n%s", e.getMessage()));
+                response.addErrorResult(objectIdData, OperationStatus.FAILURE, HTTP_500,
+                        INTERNAL_ERROR, e);
             }
         }
     }

@@ -2,7 +2,10 @@ package nz.co.fmg.redis.Utils;
 
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Jacob Hallgarth
@@ -32,20 +35,21 @@ public class StringUtils {
      * @return Returns the {@param values} into prettified JSON format
      */
     public static String reduceMap(Map<String, String> values, boolean isArray) {
-        HashMap<String, Collection<JSONObject>> jsonMap = new HashMap<>();
-
         if (isArray) {
+            HashMap<String, Collection<JSONObject>> jsonMap = new HashMap<>();
             ArrayList<JSONObject> jsonValues = new ArrayList<>();
             for (Map.Entry<String, String> entry : values.entrySet()) {
                 JSONObject json = new JSONObject(entry.getValue());
                 jsonValues.add(json);
             }
             jsonMap.put("Entries", jsonValues);
+            return new JSONObject(jsonMap).toString();
         } else {
+            HashMap<String, JSONObject> jsonMap = new HashMap<>();
             for (Map.Entry<String, String> entry : values.entrySet()) {
-                jsonMap.put(entry.getKey(), Collections.singleton(new JSONObject(entry.getValue())));
+                jsonMap.put(entry.getKey(), new JSONObject(entry.getValue()));
             }
+            return new JSONObject(jsonMap).toString();
         }
-        return new JSONObject(jsonMap).toString();
     }
 }

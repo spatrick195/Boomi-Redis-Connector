@@ -22,74 +22,86 @@ public class RedisCommands extends RedisRepository {
 
     @Override
     public Map<String, String> getAll(String key) {
+        Map<String, String> result;
         Jedis jedis = getJedis();
         try {
-            return jedis.hgetAll(key);
+            result = jedis.hgetAll(key);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
     public String get(String key) {
+        String result;
         Jedis jedis = getJedis();
         try {
-            return jedis.get(key);
+            result = jedis.get(key);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
     public String get(String key, String field) {
+        String result;
         Jedis jedis = getJedis();
         try {
-            return jedis.hget(key, field);
+            result = jedis.hget(key, field);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
     public String set(String key, String value) {
+        String result;
         Jedis jedis = getJedis();
         try {
-            return jedis.set(key, value);
+            result = jedis.set(key, value);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
     public Long set(String key, String field, String value) {
+        long result;
         Jedis jedis = getJedis();
         try {
-            return jedis.hset(key, field, value);
+            result = jedis.hset(key, field, value);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
     public String set(String key, int expiry, String value) {
+        String result;
         Jedis jedis = getJedis();
         try {
-            return jedis.setex(key, expiry, value);
+            result = jedis.setex(key, expiry, value);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
     public Long pattern(String pattern) {
-        Long result = null;
         Jedis jedis = getJedis();
         ScanParams params = new ScanParams().match(pattern);
         ScanIterator iterator = new ScanIterator(jedis, params);
+        long result = 0;
         try {
             while (iterator.hasNext()) {
                 List<String> keys = iterator.next();
-                result = (long) keys.size();
+                result = keys.size();
                 for (String key : keys) {
                     jedis.del(key);
                 }
@@ -102,39 +114,58 @@ public class RedisCommands extends RedisRepository {
 
     @Override
     public Long delete(String key) {
+        long result;
         Jedis jedis = getJedis();
         try {
-            return jedis.del(key);
+            result = jedis.del(key);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
     public Long delete(String key, String field) {
+        long result;
         Jedis jedis = getJedis();
         try {
-            return jedis.hdel(key, field);
+            result = jedis.hdel(key, field);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
+    }
+
+
+    @Override
+    public String ping(){
+        String result;
+        Jedis jedis = getJedis();
+        try{
+            result = jedis.ping();
+        } finally {
+            releaseJedis(jedis);
+        }
+        return result;
     }
 
     @Override
     public Long expire(String key) {
+        long result;
         Jedis jedis = getJedis();
         try {
-            return jedis.expire(key, 0);
+            result = jedis.expire(key, 0);
         } finally {
             releaseJedis(jedis);
         }
+        return result;
     }
 
     @Override
-    public Long expire(String key, Integer seconds) {
+    public void expire(String key, Integer seconds) {
         Jedis jedis = getJedis();
         try {
-            return jedis.expire(key, seconds);
+            jedis.expire(key, seconds);
         } finally {
             releaseJedis(jedis);
         }
@@ -151,17 +182,19 @@ public class RedisCommands extends RedisRepository {
     }
 
     @Override
-    public Long hashPattern(String pattern) {
-        Jedis jedis = getJedis();
+    public Long keys(String pattern) {
+        long result;
         HashSet<String> keys;
+        Jedis jedis = getJedis();
         try {
             keys = new HashSet<>(jedis.hkeys(pattern));
+            result = keys.size();
             for (String key : keys) {
                 jedis.del(key);
             }
         } finally {
             releaseJedis(jedis);
         }
-        return (long) keys.size();
+        return result;
     }
 }

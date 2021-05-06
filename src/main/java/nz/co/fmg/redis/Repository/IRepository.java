@@ -70,7 +70,7 @@ public interface IRepository {
      */
     Long pattern(String pattern);
 
-    Long hashPattern(String pattern);
+    Long keys(String pattern);
 
     /**
      * Removes the specified keys. A key is ignored if it does not exist.
@@ -90,6 +90,8 @@ public interface IRepository {
      */
     Long delete(String key, String field);
 
+    String ping();
+
     /**
      * Expires the specified key
      *
@@ -103,9 +105,8 @@ public interface IRepository {
      *
      * @param key     The key to be expired
      * @param seconds The time to live
-     * @return Returns 1 if the timeout was successful, 0  if the key does not exist
      */
-    Long expire(String key, Integer seconds);
+    void expire(String key, Integer seconds);
 
     Boolean isExpiry();
 

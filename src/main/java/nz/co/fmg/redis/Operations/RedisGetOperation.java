@@ -5,20 +5,19 @@ import com.boomi.connector.util.BaseGetOperation;
 import nz.co.fmg.redis.RedisConnection;
 import nz.co.fmg.redis.Repository.RedisRepository;
 import nz.co.fmg.redis.Utils.BoomiUtils;
+import nz.co.fmg.redis.Utils.Constants;
 import nz.co.fmg.redis.Utils.StringUtils;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static com.boomi.connector.api.ResponseUtil.toPayload;
-
 public class RedisGetOperation extends BaseGetOperation {
-    private final RedisRepository cache;
+    private final RedisRepository redis;
 
     public RedisGetOperation(RedisConnection conn) {
         super(conn);
-        cache = conn.getRedisInstance();
+        redis = conn.getRedisInstance();
     }
 
     @Override
@@ -27,6 +26,10 @@ public class RedisGetOperation extends BaseGetOperation {
         ObjectIdData objectId = request.getObjectId();
 
         String cacheKey = BoomiUtils.GetPrefixedKey(objectId, "cacheKey");
+        if(StringUtils.isEmpty(cacheKey)){
+            logger.severe("The cache key was either null or empty.");
+            response.addErrorResult(objectId, OperationStatus.APPLICATION_ERROR, Constants.RESPONSE_FAIL_NO_KEY, Constants.RESPONSE_FAIL_NO_KEY, new Exception("The cache key is a required document property"));
+        }
         String cacheInnerKey = BoomiUtils.GetDynamicProperty(objectId, "cacheInnerKey");
         String cacheJSONArrayOutput = BoomiUtils.GetDynamicProperty(objectId, "cacheJSONArrayOutput");
 
@@ -37,21 +40,25 @@ public class RedisGetOperation extends BaseGetOperation {
         try {
             if (StringUtils.isEmpty(cacheKey)) {
                 logger.severe("The cache key was either null or empty.");
+                response.addErrorResult(objectId, OperationStatus.APPLICATION_ERROR, Constants.RESPONSE_FAIL_NO_KEY, Constants.RESPONSE_FAIL_NO_KEY, new Exception("The cache key is a required document property"));
             }
             String cacheResponse = null;
             Map<String, String> cacheValueMap;
             if (getAll) {
-                cacheValueMap = cache.getAll(cacheKey);
+                cacheValueMap = redis.getAll(cacheKey);
                 String jsonValues = StringUtils.reduceMap(cacheValueMap, isArray);
-                response.addResult(objectId, OperationStatus.SUCCESS, "200", "OK", toPayload(jsonValues));
+                response.addResult(objectId, OperationStatus.SUCCESS, "200", "OK", ResponseUtil.toPayload(jsonValues));
             } else if (isHash) {
-                cacheResponse = cache.get(cacheKey, cacheInnerKey);
+                cacheResponse = redis.get(cacheKey, cacheInnerKey);
             } else {
-                cacheResponse = cache.get(cacheKey);
+                cacheResponse = redis.get(cacheKey);
             }
+            logger.info(String.format("REDIS: 'GET '%s' returned '%s'", cacheKey, cacheResponse));
 
             if (cacheResponse != null) {
-                response.addResult(objectId, OperationStatus.SUCCESS, "200", "OK", toPayload(cacheResponse));
+                response.addResult(objectId, OperationStatus.SUCCESS, Constants.HTTP_200, Constants.OK, ResponseUtil.toPayload(Constants.OK));
+            } else {
+                response.addEmptyResult(objectId, OperationStatus.APPLICATION_ERROR, Constants.HTTP_404, Constants.NOT_FOUND);
             }
 
         } catch (Exception e) {

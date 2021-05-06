@@ -62,15 +62,17 @@ public abstract class RedisRepository implements IRepository {
 
     public abstract Long delete(String key);
 
-    public abstract Long delete(String key, String value);
+    public abstract Long delete(String key, String field);
 
     public abstract Long pattern(String key);
 
-    public abstract Long hashPattern(String key);
+    public abstract Long keys(String key);
 
     public abstract Long expire(String key);
 
-    public abstract Long expire(String key, Integer seconds);
+    public abstract void expire(String key, Integer seconds);
+
+    public abstract String ping();
 
     public abstract Long getExpiry();
 
