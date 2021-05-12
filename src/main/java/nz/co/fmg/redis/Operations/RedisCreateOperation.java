@@ -7,6 +7,8 @@ import nz.co.fmg.redis.Repository.RedisRepository;
 import nz.co.fmg.redis.Utils.BoomiUtils;
 import nz.co.fmg.redis.Utils.StringUtils;
 
+import java.util.logging.Logger;
+
 import static nz.co.fmg.redis.Utils.Constants.*;
 
 public class RedisCreateOperation extends BaseUpdateOperation {
@@ -19,66 +21,54 @@ public class RedisCreateOperation extends BaseUpdateOperation {
 
     @Override
     protected void executeUpdate(UpdateRequest request, OperationResponse response) {
+        Logger logger = response.getLogger();
         for (ObjectData objectData : request) {
+            String result;
+            boolean isSuccessful;
+
+            String cacheKey = BoomiUtils.GetPrefixedKey(objectData, "cacheKey");
+            if (StringUtils.isEmpty(cacheKey)) {
+                logger.severe("REDIS: Delete operation failed because the cache key was empty.");
+                response.addErrorResult(objectData, OperationStatus.APPLICATION_ERROR, HTTP_400, BAD_REQUEST, new Exception("The cache key is a required document property"));
+            }
+
+            String cacheField = BoomiUtils.GetDynamicProperty(objectData, "cacheInnerKey");
+            String cacheValue = BoomiUtils.GetDynamicProperty(objectData, "cacheValue");
+
+            if (StringUtils.isEmpty(cacheValue)) {
+                logger.severe("REDIS: Delete operation failed because the cache value was empty.");
+                response.addErrorResult(objectData, OperationStatus.APPLICATION_ERROR, HTTP_400, BAD_REQUEST, new Exception("The cache value is a required document property"));
+            }
+
+            String cacheExpiry = BoomiUtils.GetDynamicProperty(objectData, "cacheExpiry");
+
+            boolean isHash = StringUtils.isNotEmpty(cacheField);
+            boolean isDeprecatedExpiry = redis.isExpiry();
+            long deprecatedExpiry = redis.getExpiry();
             try {
-                String result;
-                boolean isSuccessful;
-
-                String cacheKey = BoomiUtils.GetPrefixedKey(objectData, "cacheKey");
-                response.getLogger().info(String.format("REDIS: Cache key set to '%s'", cacheKey));
-                if(StringUtils.isEmpty(cacheKey)){
-                    response.addErrorResult(objectData, OperationStatus.APPLICATION_ERROR, HTTP_400,
-                            BAD_REQUEST, new Exception("The cache key is a required document property"));
-
-                }
-                String cacheField = BoomiUtils.GetDynamicProperty(objectData, "cacheInnerKey");
-                if (StringUtils.isNotEmpty(cacheField)) {
-                    response.getLogger().info(String.format("REDIS: Cache field set to '%s'", cacheField));
-                }
-
-                String cacheValue = BoomiUtils.GetDynamicProperty(objectData, "cacheValue");
-                response.getLogger().info(String.format("REDIS: Cache value set to '%s'", cacheValue));
-                if (StringUtils.isEmpty(cacheValue)) {
-                    response.addErrorResult(objectData, OperationStatus.APPLICATION_ERROR, HTTP_400,
-                            BAD_REQUEST, new Exception("The cache value is a required document property"));
-                }
-
-                String cacheExpiry = BoomiUtils.GetDynamicProperty(objectData, "cacheExpiry");
-                if (StringUtils.isNotEmpty(cacheExpiry)) {
-                    response.getLogger().fine(String.format("REDIS: Cache expiry set to '%s'", cacheExpiry));
-                }
-
-                boolean isHash = StringUtils.isNotEmpty(cacheField);
-                boolean isDeprecatedExpiry = redis.isExpiry();
-                long deprecatedExpiry = redis.getExpiry();
-                String logMessage = String.format("REDIS: Creating key '%s' \n Field: '%s' \n Value: '%s' \n Expiry: '%s'", cacheKey, cacheField, cacheValue, deprecatedExpiry);
-
+                logger.info(String.format("REDIS: Creating key '%s' \n Field: '%s' \n Value: '%s' \n Expiry: '%s'", cacheKey, cacheField, cacheValue, deprecatedExpiry));
                 if (isHash) {
-                    response.getLogger().info(logMessage);
                     result = redis.set(cacheKey, cacheField, cacheValue).toString();
                     isSuccessful = result.equals(HASH_RESPONSE_SUCCESS);
                 } else if (StringUtils.isNotEmpty(cacheExpiry)) {
-                    response.getLogger().info(logMessage);
                     result = redis.set(cacheKey, Integer.parseInt(cacheExpiry), cacheValue);
                     isSuccessful = result.equals(OK);
                 } else {
-                    response.getLogger().info(logMessage);
                     result = redis.set(cacheKey, cacheValue);
                     isSuccessful = result.equals(OK);
                 }
 
                 if (isDeprecatedExpiry) {
-                    response.getLogger().warning("REDIS: Using deprecated expiry method");
+                    logger.warning("REDIS: Using deprecated expiry method");
                     redis.expire(cacheKey, redis.getExpiry().intValue());
                 }
 
-                response.getLogger().fine(String.format("REDIS: 'SET %s' returned '%s'", cacheKey, result));
+                logger.fine(String.format("REDIS: 'SET %s' returned '%s'", cacheKey, result));
 
                 if (isSuccessful) {
                     response.addResult(objectData, OperationStatus.SUCCESS, HTTP_201, CREATED, PayloadUtil.toPayload(result));
                 } else {
-                    response.getLogger().warning(String.format("REDIS: 'SET %s' was not set. Response value was: '%s'.",
-                            cacheKey, result));
+                    logger.warning(String.format("REDIS: 'SET %s' was not set. Response value was: '%s'.", cacheKey, result));
                     response.addEmptyResult(objectData, OperationStatus.APPLICATION_ERROR, HTTP_400, BAD_REQUEST);
                 }
             } catch (Exception e) {

@@ -30,7 +30,7 @@
         <helpText>This property has been deprecated and is only meant for backwards compatibility. Please use
             the Redis document property instead
         </helpText>
-        <defaultValue>0</defaultValue>
+        <defaultValue>-1</defaultValue>
     </field>
     <operation types="GET">
         <field id="getAll" label="Retrieve all items in hash set" type="boolean">
@@ -57,7 +57,7 @@
     <dynamicProperty type="string" id="cacheKey" label="Key"/>
     <dynamicProperty type="string" id="cacheInnerKey" label="Field"/>
     <dynamicProperty type="string" id="cacheValue" label="Value"/>
-    <dynamicProperty type="boolean" id="cachePrefix" label="Use Prefix"/>
     <dynamicProperty type="integer" id="cacheExpiry" label="Expiry"/>
+    <dynamicProperty type="boolean" id="cachePrefix" label="Use Prefix"/>
     <dynamicProperty type="string" id="cacheJSONArrayOutput" label="HGet to JSON Array"/>
 </GenericConnectorDescriptor>
