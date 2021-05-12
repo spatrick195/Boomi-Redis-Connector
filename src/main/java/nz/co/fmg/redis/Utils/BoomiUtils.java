@@ -15,7 +15,7 @@ public class BoomiUtils {
      */
     public static String GetDynamicProperty(TrackedData data, String propertyName) {
         Map<String, String> dynamicProperties = data.getDynamicProperties();
-        if(dynamicProperties.isEmpty()){
+        if (dynamicProperties.isEmpty()) {
             return null;
         }
         return dynamicProperties.get(propertyName);
@@ -26,9 +26,12 @@ public class BoomiUtils {
      * @param propertyName Specifies the name of the property to retrieve
      * @return Returns the boolean value of {@param propertyName} if found
      */
-    public static boolean GetOperationBoolProperty(OperationContext data, String propertyName) {
+    public static Boolean GetOperationBoolProperty(OperationContext data, String propertyName) {
         PropertyMap propertyMap = data.getOperationProperties();
-        return propertyMap.getBooleanProperty(propertyName, false);
+        if (propertyMap.isEmpty()) {
+            return false;
+        }
+        return Boolean.getBoolean(propertyMap.getProperty(propertyName));
     }
 
     /**
