@@ -18,9 +18,11 @@ public class TestBoomiBrowse {
     private final ConnectorTester tester;
     private final SimpleBrowseContext browseContext;
     private final List<SimpleTrackedData> simpleData;
+
     SimpleOperationContext context;
     List<SimpleOperationResult> expectedResults;
     SimplePayloadMetadata metadata;
+
     public TestBoomiBrowse() {
         RedisConnector connection = new RedisConnector();
         SimpleAtomConfig atomConfig = new SimpleAtomConfig();
