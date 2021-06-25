@@ -15,7 +15,7 @@ public abstract class RedisRepository implements IRepository {
     protected RedisRepository() {
     }
 
-    protected void InitializeConnection(final String host, final Long port, final String password, final Long timeout,
+    protected void initializeConnection(final String host, final Long port, final String password, final Long timeout,
                                         final Boolean clusterEnabled) {
         if (StringUtils.isEmpty(host)) {
             throwException(new Exception("The value for host was empty."));

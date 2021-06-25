@@ -26,21 +26,21 @@ public class RedisCreateOperation extends BaseUpdateOperation {
             String result;
             boolean isSuccessful;
 
-            String cacheKey = BoomiUtils.GetPrefixedKey(objectData, "cacheKey");
+            String cacheKey = BoomiUtils.getPrefixedKey(objectData, "cacheKey");
             if (StringUtils.isEmpty(cacheKey)) {
                 logger.severe("REDIS: Delete operation failed because the cache key was empty.");
                 response.addErrorResult(objectData, OperationStatus.APPLICATION_ERROR, HTTP_400, BAD_REQUEST, new Exception("The cache key is a required document property"));
             }
 
-            String cacheField = BoomiUtils.GetDynamicProperty(objectData, "cacheInnerKey");
-            String cacheValue = BoomiUtils.GetDynamicProperty(objectData, "cacheValue");
+            String cacheField = BoomiUtils.getDynamicProperty(objectData, "cacheInnerKey");
+            String cacheValue = BoomiUtils.getDynamicProperty(objectData, "cacheValue");
 
             if (StringUtils.isEmpty(cacheValue)) {
                 logger.severe("REDIS: Delete operation failed because the cache value was empty.");
                 response.addErrorResult(objectData, OperationStatus.APPLICATION_ERROR, HTTP_400, BAD_REQUEST, new Exception("The cache value is a required document property"));
             }
 
-            String cacheExpiry = BoomiUtils.GetDynamicProperty(objectData, "cacheExpiry");
+            String cacheExpiry = BoomiUtils.getDynamicProperty(objectData, "cacheExpiry");
 
             boolean isHash = StringUtils.isNotEmpty(cacheField);
             boolean isDeprecatedExpiry = redis.isExpiry();

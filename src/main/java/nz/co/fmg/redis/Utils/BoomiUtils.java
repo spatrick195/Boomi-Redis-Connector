@@ -13,7 +13,7 @@ public class BoomiUtils {
      * @param propertyName Specifies the name of the dynamic property
      * @return Returns the value of the {@param propertyName} or null if it is not found
      */
-    public static String GetDynamicProperty(TrackedData data, String propertyName) {
+    public static String getDynamicProperty(TrackedData data, String propertyName) {
         Map<String, String> dynamicProperties = data.getDynamicProperties();
         if (dynamicProperties.isEmpty()) {
             return null;
@@ -26,7 +26,7 @@ public class BoomiUtils {
      * @param propertyName Specifies the name of the property to retrieve
      * @return Returns the boolean value of {@param propertyName} if found
      */
-    public static Boolean GetOperationBoolProperty(OperationContext data, String propertyName) {
+    public static Boolean getOperationBoolProperty(OperationContext data, String propertyName) {
         PropertyMap propertyMap = data.getOperationProperties();
         if (propertyMap.isEmpty()) {
             return false;
@@ -39,17 +39,16 @@ public class BoomiUtils {
      * @param key  Specifies the name of the dynamic property
      * @return Returns either the prefixed cache key or the key by itself
      */
-    public static String GetPrefixedKey(TrackedData data, String key) {
-        String cacheKey = GetDynamicProperty(data, key);
-        String cacheAtom = GetDynamicProperty(data, "cacheAtom");
-        String cachePrefix = GetDynamicProperty(data, "cachePrefix");
+    public static String getPrefixedKey(TrackedData data, String key) {
+        String cacheKey = getDynamicProperty(data, key);
+        String cacheAtom = getDynamicProperty(data, "cacheAtom");
+        String cachePrefix = getDynamicProperty(data, "cachePrefix");
         String prefixedKey = String.join(":", cacheAtom, cacheKey);
 
         boolean isPrefix = StringUtils.isNotEmpty(cachePrefix) && "true".equals(cachePrefix) ? Boolean.TRUE :
                 Boolean.FALSE;
         boolean isProductionEnv = Objects.equals(cacheAtom, Constants.PROD_ATOM) || Objects.equals(cacheAtom,
                 Constants.PRE_PROD_ATOM);
-
         if (!isPrefix) {
             return cacheKey;
         } else if (isProductionEnv) {

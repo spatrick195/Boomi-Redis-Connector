@@ -25,18 +25,18 @@ public class RedisGetOperation extends BaseGetOperation {
         Logger logger = response.getLogger();
         ObjectIdData objectId = request.getObjectId();
 
-        String cacheKey = BoomiUtils.GetPrefixedKey(objectId, "cacheKey");
+        String cacheKey = BoomiUtils.getPrefixedKey(objectId, "cacheKey");
         if (StringUtils.isEmpty(cacheKey)) {
             logger.severe("REDIS: GET operation failed because the cache key was empty.");
             response.addErrorResult(objectId, OperationStatus.APPLICATION_ERROR, Constants.HTTP_400, Constants.BAD_REQUEST, new Exception("The cache key is a required document property"));
         }
 
-        String cacheField = BoomiUtils.GetDynamicProperty(objectId, "cacheInnerKey");
-        String cacheJSONArrayOutput = BoomiUtils.GetDynamicProperty(objectId, "cacheJSONArrayOutput");
+        String cacheField = BoomiUtils.getDynamicProperty(objectId, "cacheInnerKey");
+        String cacheJSONArrayOutput = BoomiUtils.getDynamicProperty(objectId, "cacheJSONArrayOutput");
 
         boolean isArray = Objects.equals(cacheJSONArrayOutput, "true");
         boolean isHash = StringUtils.isNotEmpty(cacheField);
-        boolean getAll = BoomiUtils.GetOperationBoolProperty(getContext(), "getAll");
+        boolean getAll = BoomiUtils.getOperationBoolProperty(getContext(), "getAll");
         logger.info(String.format("REDIS: Retrieving key '%s' \n Field: '%s'", cacheKey, cacheField));
         try {
             String cacheResponse = null;

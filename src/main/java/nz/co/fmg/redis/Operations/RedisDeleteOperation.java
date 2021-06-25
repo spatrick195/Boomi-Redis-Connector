@@ -24,13 +24,13 @@ public class RedisDeleteOperation extends BaseDeleteOperation {
         Logger logger = response.getLogger();
         for (ObjectIdData objectIdData : request) {
             try {
-                String cacheKey = BoomiUtils.GetPrefixedKey(objectIdData, "cacheKey");
-                String cacheField = BoomiUtils.GetDynamicProperty(objectIdData, "cacheInnerKey");
+                String cacheKey = BoomiUtils.getPrefixedKey(objectIdData, "cacheKey");
+                String cacheField = BoomiUtils.getDynamicProperty(objectIdData, "cacheInnerKey");
 
                 long deletedValue;
                 boolean isSuccessful;
                 boolean isHash = StringUtils.isNotEmpty(cacheField);
-                boolean deleteByPattern = BoomiUtils.GetOperationBoolProperty(getContext(), "deleteByPattern");
+                boolean deleteByPattern = BoomiUtils.getOperationBoolProperty(getContext(), "deleteByPattern");
 
                 if (StringUtils.isEmpty(cacheKey)) {
                     logger.severe("REDIS: Delete operation failed because the cache key was empty.");

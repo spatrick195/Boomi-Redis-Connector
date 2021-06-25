@@ -15,7 +15,7 @@ public class RedisCommands extends RedisRepository {
 
     public RedisCommands(String host, Long port, String password, Long timeout,
                          Boolean clusterEnabled, Boolean expiryEnabled, Long expiryTime) {
-        super.InitializeConnection(host, port, password, timeout, clusterEnabled);
+        super.initializeConnection(host, port, password, timeout, clusterEnabled);
         _expiryTimeout = expiryTime;
         _expiryEnabled = expiryEnabled;
     }
